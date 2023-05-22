@@ -190,12 +190,12 @@ public class Item extends BaseSimpleCustomizableMetadata<ItemAttribute> implemen
 		this.defaultExpirationPeriod = defaultExpirationPeriod;
 	}
 
-	public Boolean getConceptAccepted() {
+	public Boolean whetherConceptAccepted() {
 		return this.conceptAccepted;
 	}
 
 	public boolean isConceptAccepted() {
-		return Boolean.TRUE.equals(getConceptAccepted());
+		return Boolean.TRUE.equals(whetherConceptAccepted());
 	}
 
 	public void setConceptAccepted(Boolean conceptAccepted) {

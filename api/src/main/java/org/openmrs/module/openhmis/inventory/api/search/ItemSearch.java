@@ -67,8 +67,8 @@ public class ItemSearch extends BaseMetadataTemplateSearch<Item> {
 		if (item.getHasPhysicalInventory() != null) {
 			criteria.add(Restrictions.eq("hasPhysicalInventory", item.getHasPhysicalInventory()));
 		}
-		if (item.getConceptAccepted() != null) {
-			criteria.add(Restrictions.eq("conceptAccepted", item.getConceptAccepted()));
+		if (item.isConceptAccepted()) {
+			criteria.add(Restrictions.eq("conceptAccepted", item.isConceptAccepted()));
 		}
 	}
 }
