@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
@@ -34,8 +35,6 @@ import org.openmrs.module.openhmis.inventory.api.model.ItemPrice;
 import org.openmrs.module.openhmis.inventory.api.search.ItemSearch;
 
 import com.google.common.collect.Iterators;
-
-import liquibase.util.StringUtils;
 
 public class IItemDataServiceTest extends IMetadataDataServiceTest<IItemDataService, Item> {
 	public static final String ITEM_DATASET = TestConstants.BASE_DATASET_DIR + "ItemTest.xml";

@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Patient;
@@ -32,7 +33,6 @@ import org.openmrs.module.openhmis.inventory.api.search.StockOperationSearch;
 
 import com.google.common.collect.Iterators;
 
-import liquibase.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class IStockOperationDataServiceTest extends IMetadataDataServiceTest<IStockOperationDataService, StockOperation> {

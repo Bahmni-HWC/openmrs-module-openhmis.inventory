@@ -17,13 +17,19 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Privilege;
 import org.openmrs.api.UserService;
+import org.openmrs.module.openhmis.commons.model.RoleCreationViewModel;
 import org.openmrs.module.openhmis.commons.web.controller.RoleCreationControllerBase;
 import org.openmrs.module.openhmis.inventory.api.util.PrivilegeConstants;
 import org.openmrs.module.openhmis.inventory.web.ModuleWebConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.Set;
 
 /**
@@ -49,5 +55,18 @@ public class InventoryRoleController extends RoleCreationControllerBase {
 	@Override
 	public Set<Privilege> privileges() {
 		return PrivilegeConstants.getDefaultPrivileges();
+	}
+
+	@RequestMapping(method = { RequestMethod.GET })
+	@Override
+	public void render(ModelMap model, HttpServletRequest request) throws IOException {
+		super.render(model, request);
+	}
+
+	@RequestMapping(method = { RequestMethod.POST })
+	@Override
+	public void submit(HttpServletRequest request, RoleCreationViewModel viewModel,
+	        Errors errors, ModelMap model) throws IOException {
+		super.submit(request, viewModel, errors, model);
 	}
 }

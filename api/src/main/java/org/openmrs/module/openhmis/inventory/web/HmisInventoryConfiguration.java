@@ -33,11 +33,10 @@ public class HmisInventoryConfiguration {
 	 */
 	@Bean
 	public AbstractHandlerMapping gettHandlerMapping() throws Exception {
-
 		Class<?> clazz;
-		if (ModuleUtil.compareVersion(OpenmrsConstants.OPENMRS_VERSION_SHORT, "2.4") < 0) {
+		try {
 			clazz = Context.loadClass("org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping");
-		} else {
+		} catch (ClassNotFoundException e) {
 			clazz = Context.loadClass("org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping");
 		}
 
