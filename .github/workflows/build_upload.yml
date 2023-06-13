@@ -4,6 +4,7 @@ on:
  push:
     branches:
      - master
+     - 122
  workflow_dispatch:
 env:
   ORG_NAME: Bahmni-HWC
