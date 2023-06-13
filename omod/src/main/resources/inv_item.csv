@@ -1,0 +1,6 @@
+item_id,name,description,department_id,default_price_id,has_expiration,concept_id,creator,date_created,changed_by,date_changed,retired,retired_by,date_retired,retire_reason,uuid,has_physical_inventory,default_expiration_period,concept_accepted,minimum_quantity,buying_price
+1,Tablet one Acetaminophenomodsrcreso ,,1,1,0,13530,4,2023-05-28 14:17:12,4,2023-05-28 14:17:12,0,,,,d35ac636-596c-4293-8925-dcb62f7a4727,1,,0,10,10.00
+2,Tablet Ibuprofen,,1,2,0,8363,4,2023-05-28 14:18:08,4,2023-05-28 15:31:13,0,,,,995879a8-8c3d-45c1-a0eb-0ed8f96c2ad2,1,,0,20,40.00
+3,Asthalin,,1,3,0,47350,4,2023-06-07 09:28:30,4,2023-06-07 09:28:31,0,,,,3fa37bb3-2c7e-409a-90f3-85663a8954f4,0,,0,,
+4,Kufril,,1,4,0,,4,2023-06-07 10:03:10,4,2023-06-07 10:03:10,0,,,,e34ebcf9-9156-43d1-a8ed-2a9c3d50db72,0,,0,,
+8,dolo650,,1,9,0,4580,4,2023-06-07 10:07:03,4,2023-06-07 10:07:03,0,,,,ef2bae9b-0eab-4646-a5d0-d7de38b2c013,0,,0,,
