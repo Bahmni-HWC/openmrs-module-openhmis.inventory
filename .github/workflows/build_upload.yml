@@ -27,8 +27,29 @@ jobs:
         restore-keys: ${{ runner.os }}-m2- 
     - name: Build with Maven
       run: mvn clean install
-    - run: mkdir staging && cp omod/target/*.omod staging
+    - run: mkdir output && cp omod/target/*.omod output
     - uses: actions/upload-artifact@v2
       with:
-        name: Package
-        path: staging
+        name: omod-artifacts
+        path: output
+
+  trigger-dependent-repos:
+    name: Trigger Workflows
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dependent-repos: [ 'bahmni-india-package' ]
+    steps:
+      - name: Create repository_dispatch
+        env:
+          REPOSITORY_NAME: ${{ matrix.dependent-repos }}
+        run: |
+          trigger_result=$(curl -s -o trigger_response.txt -w "%{http_code}" -X POST -H "Accept: application/vnd.github.v3+json" -H 'authorization: Bearer ${{ secrets.BAHMNI_PAT }}' https://api.github.com/repos/${ORG_NAME}/${REPOSITORY_NAME}/dispatches -d '{"event_type":"'"${EVENT_TYPE}"'"}')
+          if [ $trigger_result == 204 ];then
+            echo "Trigger to $ORG_NAME/$REPOSITORY_NAME Success"
+          else
+            echo "Trigger to $ORG_NAME/$REPOSITORY_NAME Failed"
+            cat trigger_response.txt
+            exit 1
+          fi
