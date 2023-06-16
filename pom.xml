@@ -11,16 +11,11 @@
 	<url>https://wiki.openmrs.org/display/docs/OpenHMIS+Modules</url>
 
 	<distributionManagement>
-		<repository>
-			<id>openmrs-repo</id>
-			<name>Modules</name>
-			<url>https://openmrs.jfrog.io/openmrs/modules/</url>
-		</repository>
 		<snapshotRepository>
-    		<id>openhmis-repo</id>
-			<name>Snapshots</name>
-    		<url>http://mavenrepo.openhmisafrica.org/content/repositories/snapshots</url>
-  		</snapshotRepository>
+			<id>repo.mybahmni.org</id>
+			<name>bahmni-artifactory-snapshots</name>
+			<url>s3://repo.mybahmni.org/artifactory/snapshot</url>
+		</snapshotRepository>
 	</distributionManagement>
 
 	<developers>
@@ -379,6 +374,13 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
+		<extensions>
+			<extension>
+				<groupId>org.kuali.maven.wagons</groupId>
+				<artifactId>maven-s3-wagon</artifactId>
+				<version>1.2.1</version>
+			</extension>
+		</extensions>
 	</build>
 
 	<repositories>
@@ -400,13 +402,21 @@
 			<name>Maven Repository Switchboard</name>
 			<url>https://repo1.maven.org/maven2</url>
 		</repository>
+		<repository>
+			<id>repo.mybahmni.org</id>
+			<name>bahmni-artifactory-snapshots</name>
+			<url>https://repo.mybahmni.org.s3.amazonaws.com/artifactory/snapshot</url>
+			<snapshots>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
 	</repositories>
 
 	<pluginRepositories>
 		<pluginRepository>
 			<id>openmrs-repo</id>
 			<name>OpenMRS Nexus Repository</name>
-			<url>https://openmrs.jfrog.io/openmrs/public</url>
+			<url>https://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
