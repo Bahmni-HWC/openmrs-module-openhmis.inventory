@@ -13,17 +13,19 @@
  */
 package org.openmrs.module.openhmis.inventory;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.openmrs.Concept;
-import org.openmrs.api.UserService;
-import org.openmrs.api.impl.UserServiceImpl;
+import org.openmrs.User;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.BaseModuleActivator;
 import org.openmrs.module.openhmis.inventory.api.IItemDataService;
 import org.openmrs.module.openhmis.inventory.api.model.Department;
 import org.openmrs.module.openhmis.inventory.api.model.Item;
 import org.openmrs.module.openhmis.inventory.api.model.ItemPrice;
+import org.openmrs.module.openhmis.inventory.exception.InvalidInventoryDataException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -44,19 +46,11 @@ import java.io.IOException;
 public class InventoryModuleActivator extends BaseModuleActivator {
 
 	private static final Log LOG = LogFactory.getLog(InventoryModuleActivator.class);
+	public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	public static final String DATA_DELIMITER = ",";
+	public static final String INVENTORY_ITEMS_FILE = "inv_item.csv";
 
-	@Autowired
-	private IItemDataService invItemService;
-
-	/*Logger logger = (Logger) LogManager.getLogger(InventoryModuleActivator.class);*/
-
-	/**
-	 * @see BaseModuleActivator#contextRefreshed()
-	 */
-	@Override
-	public void contextRefreshed() {
-		LOG.info("OpenHMIS Inventory Module refreshed");
-	}
+	IItemDataService iItemDataService;
 
 	/**
 	 * @see BaseModuleActivator#started()
@@ -65,14 +59,8 @@ public class InventoryModuleActivator extends BaseModuleActivator {
 	@Autowired
 	@Transactional
 	public void started() {
-		try {
-			getInventorydata();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		LOG.info("OpenHMIS Inventory Module started");
+
 	}
 
 	/**
@@ -80,68 +68,133 @@ public class InventoryModuleActivator extends BaseModuleActivator {
 	 */
 	@Override
 	public void stopped() {
+
 		LOG.info("OpenHMIS Inventory Module stopped");
 
 	}
 
-	public void getInventorydata() throws IOException {
-		// private final String baseUrl = 'http://localhost/openmrs/ws/rest/v2/inventory/item';
-		final InputStream filepathabsolute = getClass().getClassLoader().getResourceAsStream("inv_item.csv");
-		//CSVFile persistedUploadedFile = writeToLocalFile(file, filesDirectory);
-		Scanner sc;
-		InputStream is = getClass().getClassLoader().getResourceAsStream("inv_item.csv");
+	/**
+	 * @see BaseModuleActivator#contextRefreshed()
+	 */
+	@Override
+	public void contextRefreshed() {
 
-		//LOG.error("reading from resource....." + is);
+		LOG.info("OpenHMIS Inventory Module refreshed");
+		iItemDataService = Context.getService(IItemDataService.class);
 
-		sc = new Scanner(new File("/openmrs/data/.openmrs-lib-cache/openhmis.inventory/inv_item.csv"));
-
-		LOG.error("before list......." + sc);
-
-		List<String> items = new ArrayList<>();
-
-		sc.useDelimiter(","); //sets the delimiter pattern
-		String lineData = "";
-		sc.nextLine();//skip header line
-		while (sc.hasNextLine()) {
-			lineData = sc.nextLine();
-			LOG.error("inside while............" + lineData);
-			addItem(lineData);
-
-		}
-		//invokeUsingRestTemplate();
-		sc.close(); //closes the scanner
+		processInventoryData();
 	}
 
-	public void addItem(String lineData) {
-
-		Item newItem = new Item();
-		UserService userService = new UserServiceImpl();
-
-		Department newDepartment = new Department();
-		Concept concept = new Concept();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		ItemPrice price = new ItemPrice();
-		String[] lineValues = lineData.split(",");
-		newItem.setId(Integer.valueOf(lineValues[0]));
-		newItem.setName(lineValues[1]);
-		newItem.setDescription(lineValues[2]);
-		newItem.setHasExpiration(Boolean.valueOf(lineValues[5]));
-		concept.setConceptId(Integer.valueOf(lineValues[6]));
-		newItem.setConcept(concept);
-
-		try {
-			newItem.setDateCreated(sdf.parse(lineValues[8]));
-		} catch (ParseException e) {
-			LOG.error("Invalid Date format for Creation Date field");
+	private List<String> readInventoryFile() {
+		InputStreamReader is = new InputStreamReader(getClass().getClassLoader().getResourceAsStream(INVENTORY_ITEMS_FILE));
+		List<String> fileEntries = new ArrayList<>();
+		try (BufferedReader br = new BufferedReader(is)) {
+			String lineEntry;
+			while ((lineEntry = br.readLine()) != null)
+				fileEntries.add(lineEntry);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		fileEntries.remove(0);
+		return fileEntries;
+	}
 
-		newDepartment.setId((Integer.valueOf(lineValues[3])));
-		newItem.setDepartment(newDepartment);
-		price.setPrice(BigDecimal.valueOf(Long.parseLong(lineValues[4])));
-		newItem.setDefaultPrice(price);
+	public void processInventoryData() {
 
-		//dataService.setRepository(new IHibernateRepository());
-		invItemService.save(newItem);
+		List<String> lineEntries = readInventoryFile();
 
+		for (String lineEntry : lineEntries) {
+			Item item = createItemEntity(lineEntry.split(DATA_DELIMITER));
+			iItemDataService.save(item);
+		}
+	}
+
+	private Item createItemEntity(String[] lineValues) {
+		Item newItem = new Item();
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+			if (StringUtils.isNotEmpty(lineValues[0])) {
+				newItem.setId(Integer.valueOf(lineValues[0]));
+			}
+			if (StringUtils.isEmpty(lineValues[1])) {
+				throw new InvalidInventoryDataException("Department value missing in input file");
+			}
+			newItem.setName(lineValues[1]);
+			newItem.setDescription(lineValues[2]);
+			newItem.setDepartment(getDepartment(lineValues[3]));
+			newItem.setDefaultPrice(getDefaultItemPrice(lineValues[4]));
+			newItem.setHasExpiration(getBooleanFlagFromString(lineValues[5]));
+			newItem.setConcept(getConcept(lineValues[6]));
+			newItem.setCreator(getUser(lineValues[7], false));
+			if (StringUtils.isEmpty(lineValues[8])) {
+				throw new InvalidInventoryDataException("Date Created value missing in input file");
+			}
+			newItem.setDateCreated(sdf.parse(lineValues[8]));
+			newItem.setChangedBy(getUser(lineValues[9], true));
+			newItem.setDateChanged(StringUtils.isEmpty(lineValues[10]) ? null : sdf.parse(lineValues[10]));
+			newItem.setRetired(getBooleanFlagFromString(lineValues[11]));
+			newItem.setRetiredBy(getUser(lineValues[12], true));
+			newItem.setDateRetired(StringUtils.isEmpty(lineValues[13]) ? null : sdf.parse(lineValues[13]));
+			newItem.setRetireReason(lineValues[14]);
+			if (StringUtils.isEmpty(lineValues[15])) {
+				throw new InvalidInventoryDataException("UUID value missing in input file");
+			}
+			newItem.setUuid(lineValues[15]);
+			newItem.setHasPhysicalInventory(getBooleanFlagFromString(lineValues[16]));
+			newItem.setDefaultExpirationPeriod(StringUtils.isEmpty(lineValues[17]) ? null : Integer.valueOf(lineValues[17]));
+			newItem.setConceptAccepted(getBooleanFlagFromString(lineValues[18]));
+			newItem.setMinimumQuantity(StringUtils.isEmpty(lineValues[19]) ? null : Integer.valueOf(lineValues[19]));
+			newItem.setBuyingPrice(BigDecimal.valueOf(Long.parseLong(lineValues[20])));
+
+		} catch (NumberFormatException ex) {
+			LOG.error("Invalid value found in input file", ex);
+			throw new InvalidInventoryDataException("Invalid value found in input file" + ex.getMessage());
+		} catch (ParseException e) {
+			LOG.error("Invalid Date format for Creation Date field", e);
+			throw new InvalidInventoryDataException("Invalid date format in input file" + e.getMessage());
+		}
+		return newItem;
+	}
+
+	private User getUser(String userId, boolean optional) {
+		if (StringUtils.isEmpty(userId) && optional) {
+			return null;
+		}
+		User creator = new User();
+		creator.setId(Integer.valueOf(userId));
+		return creator;
+	}
+
+	private Concept getConcept(String conceptId) {
+		if (StringUtils.isEmpty(conceptId)) {
+			return null;
+		}
+		Concept concept = new Concept();
+		concept.setConceptId(Integer.valueOf(conceptId));
+		return concept;
+	}
+
+	private boolean getBooleanFlagFromString(String lineValue) {
+		return StringUtils.isNotEmpty(lineValue) && "1".equalsIgnoreCase(lineValue);
+	}
+
+	private ItemPrice getDefaultItemPrice(String priceId) {
+		if (StringUtils.isEmpty(priceId)) {
+			throw new InvalidInventoryDataException("Default Price value missing in input file");
+		}
+		ItemPrice price = new ItemPrice();
+		price.setId(Integer.valueOf(priceId));
+		return price;
+	}
+
+	private Department getDepartment(String lineValue) {
+		if (StringUtils.isEmpty(lineValue)) {
+			throw new InvalidInventoryDataException("Department value missing in input file");
+		}
+		Department newDepartment = new Department();
+		newDepartment.setId((Integer.valueOf(lineValue)));
+		return newDepartment;
 	}
 }
