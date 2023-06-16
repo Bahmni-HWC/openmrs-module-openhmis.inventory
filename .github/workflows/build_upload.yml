@@ -3,8 +3,7 @@ name: Build and Upload omod
 on:
  push:
     branches:
-     - master
-     - 122
+     - develop
  workflow_dispatch:
 env:
   ORG_NAME: Bahmni-HWC
