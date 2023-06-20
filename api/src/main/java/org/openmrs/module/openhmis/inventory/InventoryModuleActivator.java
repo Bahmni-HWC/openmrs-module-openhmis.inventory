@@ -128,12 +128,10 @@ public class InventoryModuleActivator extends BaseModuleActivator {
 			newItem.setHasExpiration(getBooleanFlagFromString(lineValues[5]));
 			newItem.setConcept(getConcept(lineValues[6]));
 			newItem.setCreator(getUser(lineValues[7], false));
-			if (StringUtils.isEmpty(lineValues[8])) {
-				throw new InvalidInventoryDataException("Date Created value missing in input file");
-			}
-			newItem.setDateCreated(sdf.parse(lineValues[8]));
+			//set today's date if the date created is missing in the input file
+			newItem.setDateCreated(getCurrentDateIfEmpty(lineValues[8]));
 			newItem.setChangedBy(getUser(lineValues[9], true));
-			newItem.setDateChanged(StringUtils.isEmpty(lineValues[10]) ? null : sdf.parse(lineValues[10]));
+			newItem.setDateChanged(getCurrentDateIfEmpty(lineValues[10]));
 			newItem.setRetired(getBooleanFlagFromString(lineValues[11]));
 			newItem.setRetiredBy(getUser(lineValues[12], true));
 			newItem.setDateRetired(StringUtils.isEmpty(lineValues[13]) ? null : sdf.parse(lineValues[13]));
@@ -196,5 +194,13 @@ public class InventoryModuleActivator extends BaseModuleActivator {
 		Department newDepartment = new Department();
 		newDepartment.setId((Integer.valueOf(lineValue)));
 		return newDepartment;
+	}
+
+	private Date getCurrentDateIfEmpty(String dateStr) throws ParseException {
+		if (StringUtils.isEmpty(dateStr)) {
+			return new Date();
+		}
+		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+		return sdf.parse(dateStr);
 	}
 }
