@@ -49,6 +49,8 @@ public class InventoryModuleActivator extends BaseModuleActivator {
 	public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	public static final String DATA_DELIMITER = ",";
 	public static final String INVENTORY_ITEMS_FILE = "inv_item.csv";
+	public static final String TRUE_VALUE_INT = "1";
+	public static final String TRUE_VALUE_STR = "yes";
 
 	IItemDataService iItemDataService;
 
@@ -175,7 +177,10 @@ public class InventoryModuleActivator extends BaseModuleActivator {
 	}
 
 	private boolean getBooleanFlagFromString(String lineValue) {
-		return StringUtils.isNotEmpty(lineValue) && "1".equalsIgnoreCase(lineValue);
+		return StringUtils.isNotEmpty(lineValue) &&
+		        (TRUE_VALUE_INT.equalsIgnoreCase(lineValue) ||
+		                TRUE_VALUE_STR.equalsIgnoreCase(lineValue) ||
+		        Boolean.parseBoolean(lineValue));
 	}
 
 	private ItemPrice getDefaultItemPrice(String priceId) {
