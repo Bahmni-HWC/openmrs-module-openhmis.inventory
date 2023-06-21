@@ -32,7 +32,7 @@ jobs:
         aws-secret-access-key: ${{ secrets.S3_MVN_SECRET_KEY }}
         aws-region: ap-southeast-1
     - name: Build with Maven
-      run: mvn clean install -Dcheckstyle.skip -DskipTests
+      run: mvn clean -U deploy -Dcheckstyle.skip -DskipTests
 
   trigger-dependent-repos:
     name: Trigger Workflows
