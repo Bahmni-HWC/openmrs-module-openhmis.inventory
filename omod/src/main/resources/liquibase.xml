@@ -1106,4 +1106,10 @@
 			columnName="attribute_order"
 			tableName="inv_item_attribute_type"/>
 	</changeSet>
+	<changeSet id="openhmis.inventory-v1.8.0-0" author="bahmnihwc">
+		<addUniqueConstraint
+				tableName="inv_item"
+				columnNames="name"/>
+	</changeSet>
+
 </databaseChangeLog>

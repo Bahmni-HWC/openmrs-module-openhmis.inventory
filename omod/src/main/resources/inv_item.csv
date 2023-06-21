@@ -1,0 +1,8 @@
+item_id,name,description,department_id,default_price_id,has_expiration,concept_id,creator,date_created,changed_by,date_changed,retired,retired_by,date_retired,retire_reason,uuid,has_physical_inventory,default_expiration_period,concept_accepted,minimum_quantity,buying_price
+,Meftal,,1,1,false,13530,4,,4,2023-05-28 14:17:12,false,,,,b8252de7-81f6-4379-bdc2-27b3c29b0394,yes,,false,20,10
+,Domperid10mg,,1,1,false,13530,4,,4,2023-05-28 14:17:12,false,,,,b8252de7-81f6-4379-bdc2-27b3c29b0395,yes,,false,10,10
+,Isoflurine25mg,,1,1,false,13530,4,,4,2023-05-28 14:17:12,false,,,,b8252de7-81f6-4379-bdc2-27b3c29b0396,yes,,false,10,10
+,Paracetamol500mg,,1,1,false,13530,4,,4,2023-05-28 14:17:12,false,,,,b8252de7-81f6-4379-bdc2-27b3c29b0397,yes,,false,10,10
+,Paracetamol250mg,,1,1,false,13530,4,,4,2023-05-28 14:17:12,false,,,,b8252de7-81f6-4379-bdc2-27b3c29b0398,yes,,false,10,10
+,Isoflurine500mg,,1,1,true,13530,4,,4,2023-05-28 14:17:12,false,,,,b8252de7-81f6-4379-bdc2-27b3c29b0399,no,,false,20,10
+
