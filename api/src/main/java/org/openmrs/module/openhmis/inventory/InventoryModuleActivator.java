@@ -126,7 +126,7 @@ public class InventoryModuleActivator extends BaseModuleActivator {
 			newItem.setName(lineValues[1]);
 			newItem.setDescription(lineValues[2]);
 			newItem.setDepartment(getDepartment(lineValues[3]));
-			newItem.setDefaultPrice(getDefaultItemPrice(lineValues[4]));
+			newItem.setDefaultPrice(getDefaultItemPrice(lineValues[4], newItem));
 			newItem.setHasExpiration(getBooleanFlagFromString(lineValues[5]));
 			newItem.setConcept(getConcept(lineValues[6]));
 			newItem.setCreator(getUser(lineValues[7], false));
@@ -183,13 +183,14 @@ public class InventoryModuleActivator extends BaseModuleActivator {
 		        Boolean.parseBoolean(lineValue));
 	}
 
-	private ItemPrice getDefaultItemPrice(String priceId) {
-		if (StringUtils.isEmpty(priceId)) {
+	private ItemPrice getDefaultItemPrice(String price, Item item) {
+		if (StringUtils.isEmpty(price)) {
 			throw new InvalidInventoryDataException("Default Price value missing in input file");
 		}
-		ItemPrice price = new ItemPrice();
-		price.setId(Integer.valueOf(priceId));
-		return price;
+		ItemPrice itemPrice = new ItemPrice();
+		itemPrice.setItem(item);
+		itemPrice.setPrice(BigDecimal.valueOf(Long.parseLong(price)));
+		return itemPrice;
 	}
 
 	private Department getDepartment(String lineValue) {
