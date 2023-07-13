@@ -32,6 +32,16 @@ public class ItemStockDetailBase extends BaseOpenmrsObject {
 	private Boolean calculatedExpiration;
 	private Boolean calculatedBatch;
 
+	private String batchNumber;
+
+	public String getBatchNumber() {
+		return batchNumber;
+	}
+
+	public void setBatchNumber(String batchNumber) {
+		this.batchNumber = batchNumber;
+	}
+
 	/**
 	 * Gets the unique database record identifier.
 	 * @return The record identifier or {@code null} if the object is new.

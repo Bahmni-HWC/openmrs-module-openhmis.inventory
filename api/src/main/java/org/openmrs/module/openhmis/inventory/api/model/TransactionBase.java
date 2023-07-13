@@ -35,6 +35,7 @@ public abstract class TransactionBase extends BaseOpenmrsObject implements Compa
 	private Boolean sourceCalculatedExpiration;
 	private Boolean calculatedBatch;
 	private Boolean sourceCalculatedBatch;
+	private String batchNumber;
 
 	private User creator;
 	private Date dateCreated = new Date();
@@ -51,6 +52,7 @@ public abstract class TransactionBase extends BaseOpenmrsObject implements Compa
 		quantity = tx.quantity;
 		calculatedExpiration = tx.calculatedExpiration;
 		calculatedBatch = tx.calculatedBatch;
+		batchNumber = tx.batchNumber;
 	}
 
 	protected TransactionBase(StockOperationItem item) {
@@ -60,6 +62,7 @@ public abstract class TransactionBase extends BaseOpenmrsObject implements Compa
 		this.quantity = item.getQuantity();
 		this.calculatedBatch = item.isCalculatedBatch();
 		this.calculatedExpiration = item.isCalculatedExpiration();
+		this.batchNumber = item.getBatchNumber();
 	}
 
 	public Integer getId() {
@@ -156,6 +159,14 @@ public abstract class TransactionBase extends BaseOpenmrsObject implements Compa
 
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
+	}
+
+	public String getBatchNumber() {
+		return batchNumber;
+	}
+
+	public void setBatchNumber(String batchNumber) {
+		this.batchNumber = batchNumber;
 	}
 
 	@Override

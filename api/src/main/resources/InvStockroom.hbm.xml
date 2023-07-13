@@ -74,6 +74,7 @@
 		<many-to-one name="batchOperation" class="StockOperation" column="batch_operation_id" />
 		<property name="calculatedExpiration" type="boolean" column="calculated_expiration" not-null="false" />
 		<property name="calculatedBatch" type="boolean" column="calculated_batch" not-null="false" />
+		<property name="batchNumber" type="java.lang.String" column="batch_number" />
 
 		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
 	</class>
