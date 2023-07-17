@@ -70,6 +70,7 @@ public class StockOperationResource
 	private IItemDataService itemDataService;
 	private boolean submitRequired = false;
 	private boolean rollbackRequired = false;
+	private String outwardId;
 
 	public StockOperationResource() {
 		this.operationService = Context.getService(IStockOperationService.class);
@@ -98,6 +99,7 @@ public class StockOperationResource
 		description.addProperty("operationDate", Representation.DEFAULT);
 		description.addProperty("operationOrder", Representation.DEFAULT);
 		description.addProperty("cancelReason", Representation.DEFAULT);
+		description.addProperty("outwardId", Representation.DEFAULT);
 
 		if (!(rep instanceof RefRepresentation)) {
 			description.addProperty("source", Representation.REF);

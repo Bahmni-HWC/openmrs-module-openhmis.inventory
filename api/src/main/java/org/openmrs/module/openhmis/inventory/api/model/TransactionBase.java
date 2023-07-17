@@ -36,6 +36,7 @@ public abstract class TransactionBase extends BaseOpenmrsObject implements Compa
 	private Boolean calculatedBatch;
 	private Boolean sourceCalculatedBatch;
 	private String batchNumber;
+	private String outwardId;
 
 	private User creator;
 	private Date dateCreated = new Date();
@@ -53,6 +54,7 @@ public abstract class TransactionBase extends BaseOpenmrsObject implements Compa
 		calculatedExpiration = tx.calculatedExpiration;
 		calculatedBatch = tx.calculatedBatch;
 		batchNumber = tx.batchNumber;
+		outwardId = tx.outwardId;
 	}
 
 	protected TransactionBase(StockOperationItem item) {
