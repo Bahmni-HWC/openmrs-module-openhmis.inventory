@@ -51,7 +51,7 @@ public abstract class ItemStockDetailBaseResource<T extends ItemStockDetailBase>
 
 	@PropertySetter("batchNumber")
 	public void setBatchNumber(ItemStockDetailBase instance, String batchNumber) {
-		if (batchNumber == null) {
+		if (batchNumber == null || batchNumber.trim().isEmpty()) {
 			throw new IllegalArgumentException("Could not parse '" + batchNumber);
 		}
 		instance.setBatchNumber(batchNumber);
