@@ -53,6 +53,7 @@ public class StockOperation extends BaseInstanceCustomizableMetadata<IStockOpera
 	protected Institution institution;
 	protected Department department;
 	private String cancelReason;
+	private String outwardId;
 
 	@Override
 	public Integer getId() {
@@ -168,6 +169,14 @@ public class StockOperation extends BaseInstanceCustomizableMetadata<IStockOpera
 
 	public void setCancelReason(String cancelReason) {
 		this.cancelReason = cancelReason;
+	}
+
+	public String getOutwardId() {
+		return outwardId;
+	}
+
+	public void setOutwardId(String outwardId) {
+		this.outwardId = outwardId;
 	}
 
 	public StockOperationItem addItem(Item item, int quantity) {

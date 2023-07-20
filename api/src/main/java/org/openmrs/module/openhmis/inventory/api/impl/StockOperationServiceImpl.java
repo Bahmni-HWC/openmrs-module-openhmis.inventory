@@ -327,6 +327,7 @@ public class StockOperationServiceImpl extends BaseOpenmrsService implements ISt
 								detail.setBatchOperation(tx.getBatchOperation());
 								detail.setCalculatedExpiration(Boolean.TRUE.equals(tx.isCalculatedExpiration()));
 								detail.setExpiration(tx.getExpiration() == null ? null : (Date)tx.getExpiration().clone());
+								detail.setBatchNumber(tx.getBatchNumber());
 							}
 							if (detail.getQuantity() < 0) {
 								processNegativeStockDetail(stock, detail);
