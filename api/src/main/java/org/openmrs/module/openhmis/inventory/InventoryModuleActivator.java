@@ -19,12 +19,12 @@ import org.apache.commons.logging.LogFactory;
 
 import org.openmrs.Concept;
 import org.openmrs.User;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.BaseModuleActivator;
+import org.openmrs.module.openhmis.inventory.api.IItemAttributeTypeDataService;
 import org.openmrs.module.openhmis.inventory.api.IItemDataService;
-import org.openmrs.module.openhmis.inventory.api.model.Department;
-import org.openmrs.module.openhmis.inventory.api.model.Item;
-import org.openmrs.module.openhmis.inventory.api.model.ItemPrice;
+import org.openmrs.module.openhmis.inventory.api.model.*;
 import org.openmrs.module.openhmis.inventory.exception.InvalidInventoryDataException;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -48,11 +48,16 @@ public class InventoryModuleActivator extends BaseModuleActivator {
 	private static final Log LOG = LogFactory.getLog(InventoryModuleActivator.class);
 	public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	public static final String DATA_DELIMITER = ",";
-	public static final String INVENTORY_ITEMS_FILE = "inv_item.csv";
+	public static final String INVENTORY_ITEMS_FILE = "/etc/bahmni_config/openmrs/inventory/inv_item.csv";
 	public static final String TRUE_VALUE_INT = "1";
 	public static final String TRUE_VALUE_STR = "yes";
 
-	IItemDataService iItemDataService;
+	private static final String E_AUSHADHA_ATTRIBUTE_UUID = "ab9f163c-b576-4a34-8cab-11b0348589f3";
+	private static final String DRUG_ATTRIBUTE_UUID = "889d51e2-b0c5-4064-9db0-3cccc9bb7f6d";
+
+	private IItemDataService iItemDataService;
+	private ConceptService conceptService;
+	private IItemAttributeTypeDataService iItemAttributeTypeDataService;
 
 	/**
 	 * @see BaseModuleActivator#started()
@@ -83,18 +88,20 @@ public class InventoryModuleActivator extends BaseModuleActivator {
 
 		LOG.info("OpenHMIS Inventory Module refreshed");
 		iItemDataService = Context.getService(IItemDataService.class);
-
+		iItemAttributeTypeDataService = Context.getService(IItemAttributeTypeDataService.class);
+		conceptService = Context.getConceptService();
 		processInventoryData();
 	}
 
 	private List<String> readInventoryFile() {
-		InputStreamReader is = new InputStreamReader(getClass().getClassLoader().getResourceAsStream(INVENTORY_ITEMS_FILE));
 		List<String> fileEntries = new ArrayList<>();
-		try (BufferedReader br = new BufferedReader(is)) {
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(INVENTORY_ITEMS_FILE));
 			String lineEntry;
 			while ((lineEntry = br.readLine()) != null)
 				fileEntries.add(lineEntry);
 		} catch (FileNotFoundException e) {
+			LOG.info("Inventory file not found at " + INVENTORY_ITEMS_FILE);
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -106,23 +113,39 @@ public class InventoryModuleActivator extends BaseModuleActivator {
 	public void processInventoryData() {
 
 		List<String> lineEntries = readInventoryFile();
+		ItemAttributeType eAushadhaItemAttribute = iItemAttributeTypeDataService.getByUuid(E_AUSHADHA_ATTRIBUTE_UUID);
+		ItemAttributeType drugItemAttribute = iItemAttributeTypeDataService.getByUuid(DRUG_ATTRIBUTE_UUID);
+		if (eAushadhaItemAttribute == null || drugItemAttribute == null) {
+			LOG.error("Item Attribute Types not found");
+			return;
+		}
 
 		for (String lineEntry : lineEntries) {
-			Item item = createItemEntity(lineEntry.split(DATA_DELIMITER));
-			iItemDataService.save(item);
+			LOG.info("Processing inv_item line entry: " + lineEntry);
+			try {
+				Item item = createItemEntity(lineEntry.split(DATA_DELIMITER), eAushadhaItemAttribute, drugItemAttribute);
+				iItemDataService.save(item);
+				LOG.info("Inventory Item Sucessfully saved: " + item.getUuid());
+			} catch (Exception e) {
+				LOG.error("Error while processing inv_item line entry: " + lineEntry, e);
+			}
+
 		}
 	}
 
-	private Item createItemEntity(String[] lineValues) {
+	private Item createItemEntity(String[] lineValues, ItemAttributeType eAushadhaItemAttributeType,
+	        ItemAttributeType drugItemAttributeType) {
+
+		if (lineValues.length < 22) {
+			throw new InvalidInventoryDataException("Invalid number of values in input file");
+		}
 		Item newItem = new Item();
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
-			if (StringUtils.isNotEmpty(lineValues[0])) {
-				newItem.setId(Integer.valueOf(lineValues[0]));
-			}
 			if (StringUtils.isEmpty(lineValues[1])) {
-				throw new InvalidInventoryDataException("Department value missing in input file");
+				throw new InvalidInventoryDataException("Name value missing in input file");
 			}
+			newItem.setUuid(lineValues[0]);
 			newItem.setName(lineValues[1]);
 			newItem.setDescription(lineValues[2]);
 			newItem.setDepartment(getDepartment(lineValues[3]));
@@ -141,13 +164,29 @@ public class InventoryModuleActivator extends BaseModuleActivator {
 			if (StringUtils.isEmpty(lineValues[15])) {
 				throw new InvalidInventoryDataException("UUID value missing in input file");
 			}
-			newItem.setUuid(lineValues[15]);
-			newItem.setHasPhysicalInventory(getBooleanFlagFromString(lineValues[16]));
-			newItem.setDefaultExpirationPeriod(StringUtils.isEmpty(lineValues[17]) ? null : Integer.valueOf(lineValues[17]));
-			newItem.setConceptAccepted(getBooleanFlagFromString(lineValues[18]));
-			newItem.setMinimumQuantity(StringUtils.isEmpty(lineValues[19]) ? null : Integer.valueOf(lineValues[19]));
-			newItem.setBuyingPrice(BigDecimal.valueOf(Long.parseLong(lineValues[20])));
-
+			newItem.setHasPhysicalInventory(getBooleanFlagFromString(lineValues[15]));
+			newItem.setDefaultExpirationPeriod(StringUtils.isEmpty(lineValues[16]) ? null : Integer.valueOf(lineValues[16]));
+			newItem.setConceptAccepted(getBooleanFlagFromString(lineValues[17]));
+			newItem.setMinimumQuantity(StringUtils.isEmpty(lineValues[18]) ? null : Integer.valueOf(lineValues[18]));
+			newItem.setBuyingPrice(BigDecimal.valueOf(Long.parseLong(lineValues[19])));
+			String drugItemAttributeValue = lineValues[20];
+			String eAushadhaItemAttributeValue = lineValues[21];
+			if (!eAushadhaItemAttributeValue.isEmpty()) {
+				ItemAttribute eAushadhaItemAttribute = new ItemAttribute();
+				eAushadhaItemAttribute.setAttributeType(eAushadhaItemAttributeType);
+				eAushadhaItemAttribute.setValue(eAushadhaItemAttributeValue);
+				eAushadhaItemAttribute.setOwner(newItem);
+				eAushadhaItemAttribute.setCreator(newItem.getCreator());
+				newItem.addAttribute(eAushadhaItemAttribute);
+			}
+			if (!drugItemAttributeValue.isEmpty()) {
+				ItemAttribute drugItemAttribute = new ItemAttribute();
+				drugItemAttribute.setAttributeType(drugItemAttributeType);
+				drugItemAttribute.setValue(getDrugIdByName(drugItemAttributeValue));
+				drugItemAttribute.setOwner(newItem);
+				drugItemAttribute.setCreator(newItem.getCreator());
+				newItem.addAttribute(drugItemAttribute);
+			}
 		} catch (NumberFormatException ex) {
 			LOG.error("Invalid value found in input file", ex);
 			throw new InvalidInventoryDataException("Invalid value found in input file" + ex.getMessage());
@@ -167,13 +206,29 @@ public class InventoryModuleActivator extends BaseModuleActivator {
 		return creator;
 	}
 
-	private Concept getConcept(String conceptId) {
-		if (StringUtils.isEmpty(conceptId)) {
+	private Concept getConcept(String conceptName) {
+		if (StringUtils.isEmpty(conceptName)) {
 			return null;
 		}
-		Concept concept = new Concept();
-		concept.setConceptId(Integer.valueOf(conceptId));
-		return concept;
+		try {
+			return conceptService.getConcept(conceptName);
+		} catch (Exception e) {
+			LOG.error("Error while fetching concept for concept name: " + conceptName, e);
+			throw new InvalidInventoryDataException("Error while fetching concept for concept name: " + conceptName);
+		}
+
+	}
+
+	private String getDrugIdByName(String drugName) {
+		if (StringUtils.isEmpty(drugName)) {
+			return null;
+		}
+		try {
+			return conceptService.getDrug(drugName).getDrugId().toString();
+		} catch (Exception e) {
+			LOG.error("Error while fetching drug id for drug name: " + drugName, e);
+			throw new InvalidInventoryDataException("Error while fetching drug id for drug name: " + drugName);
+		}
 	}
 
 	private boolean getBooleanFlagFromString(String lineValue) {

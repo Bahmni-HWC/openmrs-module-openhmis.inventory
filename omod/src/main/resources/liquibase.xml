@@ -1129,5 +1129,26 @@
 			ALTER TABLE inv_stock_operation ADD COLUMN outward_id VARCHAR(30);
 		</sql>
 	</changeSet>
+	<changeSet id="GOK-131-add-eaushadha-item-attribute" author="Mohan">
+		<preConditions onFail="MARK_RAN">
+		<sqlCheck expectedResult="0">select count(*) from inv_item_attribute_type where name = 'eAushadhaID'</sqlCheck>
+		</preConditions>
+		<comment>Create inventory item attribute for e-aushadha</comment>
+		<sql>
+			INSERT INTO inv_item_attribute_type (name, description, format, creator, date_created, uuid)
+			VALUES ('eAushadhaID', 'E-Aushadha Drug Id','java.lang.String', 1, NOW(), 'ab9f163c-b576-4a34-8cab-11b0348589f3');
+		</sql>
+	</changeSet>
+
+	<changeSet id="GOK-131-add-drug-item-attribute" author="Mohan">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">select count(*) from inv_item_attribute_type where name = 'Drug'</sqlCheck>
+		</preConditions>
+		<comment>Create inventory item attribute for e-aushadha</comment>
+		<sql>
+			INSERT INTO inv_item_attribute_type (name, description, format, creator, date_created, uuid)
+			VALUES ('Drug', 'Drug Concept for the item','org.openmrs.Drug', 1, NOW(), '889d51e2-b0c5-4064-9db0-3cccc9bb7f6d');
+		</sql>
+	</changeSet>
 
 </databaseChangeLog>
