@@ -209,6 +209,14 @@ public class ItemDataServiceImpl extends BaseCustomizableMetadataDataServiceImpl
 	}
 
 	@Override
+	public Item getItemByUuid(final String uuid) {
+		Criteria criteria = getRepository().createCriteria(Item.class);
+		criteria.add(Restrictions.eq("uuid", uuid));
+
+		return getRepository().selectSingle(Item.class, criteria);
+	}
+
+	@Override
 	public List<Item> getItemsWithoutConcept(final List<Integer> excludedItemsIds, final Integer resultLimit) {
 		return executeCriteria(Item.class, null, new Action1<Criteria>() {
 			@Override
