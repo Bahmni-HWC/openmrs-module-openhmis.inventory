@@ -48,7 +48,6 @@ public class InventoryModuleActivator extends BaseModuleActivator {
 
     private static final Log LOG = LogFactory.getLog(InventoryModuleActivator.class);
     public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-    public static final String DATA_DELIMITER = ",";
     public static final String INVENTORY_ITEMS_FILE = "/etc/bahmni_config/openmrs/inventory/inv_item.csv";
     public static final String TRUE_VALUE_INT = "1";
     public static final String TRUE_VALUE_STR = "yes";
