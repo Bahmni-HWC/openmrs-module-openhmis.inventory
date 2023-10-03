@@ -56,4 +56,12 @@ public abstract class ItemStockDetailBaseResource<T extends ItemStockDetailBase>
 		}
 		instance.setBatchNumber(batchNumber);
 	}
+
+	@PropertySetter("inwardNumber")
+	public void setInwardNumber(ItemStockDetailBase instance, String inwardNumber) {
+		if (inwardNumber == null || inwardNumber.trim().isEmpty()) {
+			throw new IllegalArgumentException("Could not parse '" + inwardNumber);
+		}
+		instance.setInwardNumber(inwardNumber);
+	}
 }

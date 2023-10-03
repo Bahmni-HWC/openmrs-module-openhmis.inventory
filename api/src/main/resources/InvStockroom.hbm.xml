@@ -75,7 +75,7 @@
 		<property name="calculatedExpiration" type="boolean" column="calculated_expiration" not-null="false" />
 		<property name="calculatedBatch" type="boolean" column="calculated_batch" not-null="false" />
 		<property name="batchNumber" type="java.lang.String" column="batch_number" />
-
+		<property name="inwardNumber" type="java.lang.String" column="inward_number" />
 
 		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
 	</class>
@@ -182,7 +182,7 @@
 		<property name="operationDate" type="java.util.Date" column="operation_date" not-null="true" />
 		<property name="operationOrder" type="int" column="operation_order" />
 		<property name="outwardId" type="java.lang.String" column="outward_id" />
-
+		<property name="instituteId" type="java.lang.String" column="institute_id" />
 		<many-to-one name="instanceType" class="IStockOperationType" not-null="true" lazy="false" column="operation_type_id" />
 
 		<!-- Access properties via the field so setter code is not run -->

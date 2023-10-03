@@ -1120,6 +1120,15 @@
 			ALTER TABLE inv_item_stock_detail ADD COLUMN batch_number VARCHAR(15) AFTER batch_operation_id;
 		</sql>
 	</changeSet>
+	<changeSet id="Adding-InwardNumber-GOK-366"  author="Inventory">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">SELECT COUNT(*) FROM information_schema.columns WHERE table_name = 'inv_item_stock_detail' AND column_name = 'inward_number'</sqlCheck>
+		</preConditions>
+		<comment>Adding Inward Number column in inv_item_stock_detail table</comment>
+		<sql>
+			ALTER TABLE inv_item_stock_detail ADD COLUMN inward_number VARCHAR(15);
+		</sql>
+	</changeSet>
 	<changeSet id="Adding-OutwardId-colmnGOK-210"  author="Inventory">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">SELECT COUNT(*) FROM information_schema.columns WHERE table_name = 'inv_stock_operation' AND column_name = 'outward_id'</sqlCheck>
@@ -1127,6 +1136,15 @@
 		<comment>Adding OutwardId column in inv_stock_operation table</comment>
 		<sql>
 			ALTER TABLE inv_stock_operation ADD COLUMN outward_id VARCHAR(30);
+		</sql>
+	</changeSet>
+	<changeSet id="Adding-instituteId-colmnGOK-366"  author="Inventory">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">SELECT COUNT(*) FROM information_schema.columns WHERE table_name = 'inv_stock_operation' AND column_name = 'institute_id'</sqlCheck>
+		</preConditions>
+		<comment>Adding InstituteId column in inv_stock_operation table</comment>
+		<sql>
+			ALTER TABLE inv_stock_operation ADD COLUMN institute_id VARCHAR(30);
 		</sql>
 	</changeSet>
 	<changeSet id="GOK-131-add-eaushadha-item-attribute" author="Mohan">

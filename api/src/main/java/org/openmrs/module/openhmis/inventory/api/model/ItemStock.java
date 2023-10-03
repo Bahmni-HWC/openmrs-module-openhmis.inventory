@@ -32,6 +32,15 @@ public class ItemStock extends BaseOpenmrsObject implements Comparable<ItemStock
 	private int quantity;
 	private Set<ItemStockDetail> details;
 	private String batchNumber;
+	private String inwardNumber;
+
+	public String getInwardNumber() {
+		return inwardNumber;
+	}
+
+	public void setInwardNumber(String inwardNumber) {
+		this.inwardNumber = inwardNumber;
+	}
 
 	public String getBatchNumber() {
 		return batchNumber;
