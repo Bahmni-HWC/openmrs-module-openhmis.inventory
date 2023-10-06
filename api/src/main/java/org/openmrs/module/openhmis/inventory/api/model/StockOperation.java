@@ -55,6 +55,7 @@ public class StockOperation extends BaseInstanceCustomizableMetadata<IStockOpera
 	private String cancelReason;
 	private String outwardId;
 	private String instituteId;
+	private Date inwardDate;
 
 	@Override
 	public Integer getId() {
@@ -182,6 +183,14 @@ public class StockOperation extends BaseInstanceCustomizableMetadata<IStockOpera
 
 	public void setInstituteId(String instituteId) {
 		this.instituteId = instituteId;
+	}
+
+	public Date getInwardDate() {
+		return inwardDate;
+	}
+
+	public void setInwardDate(Date inwardDate) {
+		this.inwardDate = inwardDate;
 	}
 
 	public void setOutwardId(String outwardId) {

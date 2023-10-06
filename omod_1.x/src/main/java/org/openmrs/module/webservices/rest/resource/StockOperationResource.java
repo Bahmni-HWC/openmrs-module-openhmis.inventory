@@ -72,6 +72,7 @@ public class StockOperationResource
 	private boolean rollbackRequired = false;
 	private String outwardId;
 	private String instituteId;
+	private Date inwardDate;
 
 	public StockOperationResource() {
 		this.operationService = Context.getService(IStockOperationService.class);
@@ -102,6 +103,7 @@ public class StockOperationResource
 		description.addProperty("cancelReason", Representation.DEFAULT);
 		description.addProperty("outwardId", Representation.DEFAULT);
 		description.addProperty("instituteId", Representation.DEFAULT);
+		description.addProperty("inwardDate", Representation.DEFAULT);
 
 		if (!(rep instanceof RefRepresentation)) {
 			description.addProperty("source", Representation.REF);

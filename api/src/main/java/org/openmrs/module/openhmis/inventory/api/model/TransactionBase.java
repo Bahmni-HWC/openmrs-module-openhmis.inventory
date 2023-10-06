@@ -39,6 +39,7 @@ public abstract class TransactionBase extends BaseOpenmrsObject implements Compa
 	private String outwardId;
 	private String instituteId;
 	private String inwardNumber;
+	private Date inwardDate;
 
 	private User creator;
 	private Date dateCreated = new Date();
@@ -59,6 +60,7 @@ public abstract class TransactionBase extends BaseOpenmrsObject implements Compa
 		outwardId = tx.outwardId;
 		instituteId = tx.instituteId;
 		inwardNumber = tx.inwardNumber;
+		inwardDate = tx.inwardDate;
 	}
 
 	protected TransactionBase(StockOperationItem item) {

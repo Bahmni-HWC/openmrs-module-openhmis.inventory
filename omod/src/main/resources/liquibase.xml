@@ -1147,6 +1147,15 @@
 			ALTER TABLE inv_stock_operation ADD COLUMN institute_id VARCHAR(30);
 		</sql>
 	</changeSet>
+	<changeSet id="Adding-inward_date-colmn-GOK-366"  author="Inventory">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">SELECT COUNT(*) FROM information_schema.columns WHERE table_name = 'inv_stock_operation' AND column_name = 'inward_date'</sqlCheck>
+		</preConditions>
+		<comment>Adding inward_date column in inv_stock_operation table</comment>
+		<sql>
+			ALTER TABLE inv_stock_operation ADD COLUMN inward_date DATETIME;
+		</sql>
+	</changeSet>
 	<changeSet id="GOK-131-add-eaushadha-item-attribute" author="Mohan">
 		<preConditions onFail="MARK_RAN">
 		<sqlCheck expectedResult="0">select count(*) from inv_item_attribute_type where name = 'eAushadhaID'</sqlCheck>

@@ -180,6 +180,7 @@
 		<property name="description" type="java.lang.String" column="description" />
 		<property name="operationNumber" type="java.lang.String" column="operation_number" not-null="true"/>
 		<property name="operationDate" type="java.util.Date" column="operation_date" not-null="true" />
+		<property name="inwardDate" type="java.util.Date" column="inward_date" />
 		<property name="operationOrder" type="int" column="operation_order" />
 		<property name="outwardId" type="java.lang.String" column="outward_id" />
 		<property name="instituteId" type="java.lang.String" column="institute_id" />
