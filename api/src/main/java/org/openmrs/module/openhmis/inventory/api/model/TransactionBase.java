@@ -37,6 +37,9 @@ public abstract class TransactionBase extends BaseOpenmrsObject implements Compa
 	private Boolean sourceCalculatedBatch;
 	private String batchNumber;
 	private String outwardId;
+	private String instituteId;
+	private String inwardNumber;
+	private Date inwardDate;
 
 	private User creator;
 	private Date dateCreated = new Date();
@@ -55,6 +58,9 @@ public abstract class TransactionBase extends BaseOpenmrsObject implements Compa
 		calculatedBatch = tx.calculatedBatch;
 		batchNumber = tx.batchNumber;
 		outwardId = tx.outwardId;
+		instituteId = tx.instituteId;
+		inwardNumber = tx.inwardNumber;
+		inwardDate = tx.inwardDate;
 	}
 
 	protected TransactionBase(StockOperationItem item) {
@@ -65,6 +71,7 @@ public abstract class TransactionBase extends BaseOpenmrsObject implements Compa
 		this.calculatedBatch = item.isCalculatedBatch();
 		this.calculatedExpiration = item.isCalculatedExpiration();
 		this.batchNumber = item.getBatchNumber();
+		this.inwardNumber = item.getInwardNumber();
 	}
 
 	public Integer getId() {
@@ -169,6 +176,14 @@ public abstract class TransactionBase extends BaseOpenmrsObject implements Compa
 
 	public void setBatchNumber(String batchNumber) {
 		this.batchNumber = batchNumber;
+	}
+
+	public String getInwardNumber() {
+		return inwardNumber;
+	}
+
+	public void setInwardNumber(String inwardNumber) {
+		this.inwardNumber = inwardNumber;
 	}
 
 	@Override

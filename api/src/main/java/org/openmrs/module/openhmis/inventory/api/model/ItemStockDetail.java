@@ -54,6 +54,7 @@ public class ItemStockDetail extends ItemStockDetailBase {
 		this.setCalculatedExpiration(tx.isCalculatedExpiration());
 		this.setCalculatedBatch(tx.isCalculatedBatch());
 		this.setQuantity(tx.getQuantity());
+		this.setInwardNumber(tx.getInwardNumber());
 	}
 
 	/**
@@ -76,6 +77,7 @@ public class ItemStockDetail extends ItemStockDetailBase {
 		setCalculatedBatch(base.isCalculatedBatch());
 		setCalculatedExpiration(base.isCalculatedExpiration());
 		setQuantity(base.getQuantity());
+		setInwardNumber(base.getInwardNumber());
 	}
 
 	/**

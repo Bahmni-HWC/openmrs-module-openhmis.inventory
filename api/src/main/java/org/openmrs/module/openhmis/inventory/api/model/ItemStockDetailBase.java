@@ -33,6 +33,24 @@ public class ItemStockDetailBase extends BaseOpenmrsObject {
 	private Boolean calculatedBatch;
 
 	private String batchNumber;
+	private String inwardNumber;
+	private Date inwardDate;
+
+	public Date getInwardDate() {
+		return inwardDate;
+	}
+
+	public void setInwardDate(Date inwardDate) {
+		this.inwardDate = inwardDate;
+	}
+
+	public String getInwardNumber() {
+		return inwardNumber;
+	}
+
+	public void setInwardNumber(String inwardNumber) {
+		this.inwardNumber = inwardNumber;
+	}
 
 	public String getBatchNumber() {
 		return batchNumber;
