@@ -16,6 +16,7 @@ package org.openmrs.module.openhmis.inventory.api;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.module.openhmis.commons.api.PagingInfo;
 import org.openmrs.module.openhmis.commons.api.entity.IMetadataDataService;
+import org.openmrs.module.openhmis.inventory.api.model.Item;
 import org.openmrs.module.openhmis.inventory.api.model.ItemAttribute;
 import org.openmrs.module.openhmis.inventory.api.model.ItemAttributeType;
 import org.openmrs.module.openhmis.inventory.api.util.PrivilegeConstants;
@@ -31,7 +32,7 @@ public interface IItemAttributeDataService extends IMetadataDataService<ItemAttr
 
 	@Transactional(readOnly = true)
 	@Authorized({ PrivilegeConstants.VIEW_ITEMS })
-	List<ItemAttribute> getItemsByAttributeTypeAndValue(ItemAttributeType attributeType, String value,
+	List<Item> getItemsByAttributeTypeAndValue(ItemAttributeType attributeType, String value,
 	        boolean includeRetired, PagingInfo pagingInfo);
 
 }
