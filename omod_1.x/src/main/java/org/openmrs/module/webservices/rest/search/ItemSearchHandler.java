@@ -51,7 +51,7 @@ public class ItemSearchHandler
 	                Arrays.asList(
 	                        new SearchQuery.Builder(
 	                                "Find an item by its name or code, optionally filtering by department")
-	                                .withRequiredParameters("q")
+	                                .withRequiredParameters("drugId")
 	                                .withOptionalParameters("department_uuid", "has_physical_inventory")
 	                                .build()
 	                        )
@@ -74,7 +74,7 @@ public class ItemSearchHandler
 
 	@Override
 	public PageableResult search(RequestContext context) {
-		String query = context.getParameter("q");
+		String query = context.getParameter("drugId");
 		query = query.isEmpty() ? null : query;
 
 		String hasPhysicalInventoryString = context.getParameter("has_physical_inventory");
@@ -99,7 +99,7 @@ public class ItemSearchHandler
 					query = '%' + query + '%';
 					items =
 					        iItemAttributeDataService.getItemsByAttributeTypeAndValue(
-					            iItemAttributeTypeDataService.getById(1), query, false, pagingInfo);
+					            iItemAttributeTypeDataService.getById(1), query, context.getIncludeAll(), pagingInfo);
 				}
 
 				if (items == null || items.size() == 0) {
@@ -115,7 +115,7 @@ public class ItemSearchHandler
 				// If no items are found, search by name
 				items =
 				        iItemAttributeDataService.getItemsByAttributeTypeAndValue(iItemAttributeTypeDataService.getById(1),
-				            query, false, pagingInfo);
+				            query, context.getIncludeAll(), pagingInfo);
 			}
 		} else {
 			// Create the item search template with the specified parameters

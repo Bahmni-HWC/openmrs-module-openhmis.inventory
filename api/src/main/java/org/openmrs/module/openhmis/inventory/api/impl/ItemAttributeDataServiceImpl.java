@@ -87,7 +87,6 @@ public class ItemAttributeDataServiceImpl extends BaseMetadataDataServiceImpl<It
 					item.setHasPhysicalInventory(itemAttribute.getOwner().getHasPhysicalInventory());
 					item.setMinimumQuantity(itemAttribute.getOwner().getMinimumQuantity());
 					item.setDefaultPrice(itemAttribute.getOwner().getDefaultPrice());
-
 					items.add(item);
 				}
 			}
