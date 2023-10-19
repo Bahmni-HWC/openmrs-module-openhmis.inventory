@@ -94,14 +94,6 @@ public class ItemSearchHandler
 		if (department == null && hasPhysicalInventory == null) {
 			if (query != null) {
 
-				// Check if the global wildcard search is enabled
-				if (ModuleSettings.useWildcardItemSearch()) {
-					query = '%' + query + '%';
-					items =
-					        iItemAttributeDataService.getItemsByAttributeTypeAndValue(
-					            iItemAttributeTypeDataService.getById(1), query, context.getIncludeAll(), pagingInfo);
-				}
-
 				if (items == null || items.size() == 0) {
 					// Try searching by code
 					pagingInfo = PagingUtil.getPagingInfoFromContext(context);
