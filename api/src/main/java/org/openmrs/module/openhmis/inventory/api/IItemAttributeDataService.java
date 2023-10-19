@@ -13,12 +13,26 @@
  */
 package org.openmrs.module.openhmis.inventory.api;
 
+import org.openmrs.annotation.Authorized;
+import org.openmrs.module.openhmis.commons.api.PagingInfo;
 import org.openmrs.module.openhmis.commons.api.entity.IMetadataDataService;
+import org.openmrs.module.openhmis.inventory.api.model.Item;
 import org.openmrs.module.openhmis.inventory.api.model.ItemAttribute;
+import org.openmrs.module.openhmis.inventory.api.model.ItemAttributeType;
+import org.openmrs.module.openhmis.inventory.api.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * Interface that represents classes which perform data operations for {@link ItemAttribute}s.
  */
 @Transactional
-public interface IItemAttributeDataService extends IMetadataDataService<ItemAttribute> {}
+public interface IItemAttributeDataService extends IMetadataDataService<ItemAttribute> {
+
+	@Transactional(readOnly = true)
+	@Authorized({ PrivilegeConstants.VIEW_ITEMS })
+	List<Item> getItemsByAttributeTypeAndValue(ItemAttributeType attributeType, String value,
+	        boolean includeRetired, PagingInfo pagingInfo);
+
+}

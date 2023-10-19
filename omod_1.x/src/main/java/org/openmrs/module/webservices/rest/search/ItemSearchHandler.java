@@ -21,6 +21,8 @@ import org.openmrs.module.openhmis.commons.api.PagingInfo;
 import org.openmrs.module.openhmis.commons.api.entity.search.BaseObjectTemplateSearch;
 import org.openmrs.module.openhmis.inventory.ModuleSettings;
 import org.openmrs.module.openhmis.inventory.api.IDepartmentDataService;
+import org.openmrs.module.openhmis.inventory.api.IItemAttributeDataService;
+import org.openmrs.module.openhmis.inventory.api.IItemAttributeTypeDataService;
 import org.openmrs.module.openhmis.inventory.api.IItemDataService;
 import org.openmrs.module.openhmis.inventory.api.model.Department;
 import org.openmrs.module.openhmis.inventory.api.model.Item;
@@ -49,7 +51,7 @@ public class ItemSearchHandler
 	                Arrays.asList(
 	                        new SearchQuery.Builder(
 	                                "Find an item by its name or code, optionally filtering by department")
-	                                .withRequiredParameters("q")
+	                                .withRequiredParameters("drugId")
 	                                .withOptionalParameters("department_uuid", "has_physical_inventory")
 	                                .build()
 	                        )
@@ -57,16 +59,22 @@ public class ItemSearchHandler
 
 	private IItemDataService service;
 	private IDepartmentDataService departmentService;
+	private IItemAttributeDataService iItemAttributeDataService;
+	private IItemAttributeTypeDataService iItemAttributeTypeDataService;
 
 	@Autowired
-	public ItemSearchHandler(IItemDataService service, IDepartmentDataService departmentService) {
+	public ItemSearchHandler(IItemDataService service, IDepartmentDataService departmentService,
+	    IItemAttributeDataService iItemAttributeDataService,
+	    IItemAttributeTypeDataService iItemAttributeTypeDataService) {
 		this.service = service;
 		this.departmentService = departmentService;
+		this.iItemAttributeDataService = iItemAttributeDataService;
+		this.iItemAttributeTypeDataService = iItemAttributeTypeDataService;
 	}
 
 	@Override
 	public PageableResult search(RequestContext context) {
-		String query = context.getParameter("q");
+		String query = context.getParameter("drugId");
 		query = query.isEmpty() ? null : query;
 
 		String hasPhysicalInventoryString = context.getParameter("has_physical_inventory");
@@ -89,7 +97,9 @@ public class ItemSearchHandler
 				// Check if the global wildcard search is enabled
 				if (ModuleSettings.useWildcardItemSearch()) {
 					query = '%' + query + '%';
-					items = service.getByNameFragment(query, context.getIncludeAll(), pagingInfo);
+					items =
+					        iItemAttributeDataService.getItemsByAttributeTypeAndValue(
+					            iItemAttributeTypeDataService.getById(1), query, context.getIncludeAll(), pagingInfo);
 				}
 
 				if (items == null || items.size() == 0) {
@@ -103,7 +113,9 @@ public class ItemSearchHandler
 				//new paging info as otherwise the old one is used and paging does not work
 				pagingInfo = PagingUtil.getPagingInfoFromContext(context);
 				// If no items are found, search by name
-				items = service.getByNameFragment(query, context.getIncludeAll(), pagingInfo);
+				items =
+				        iItemAttributeDataService.getItemsByAttributeTypeAndValue(iItemAttributeTypeDataService.getById(1),
+				            query, context.getIncludeAll(), pagingInfo);
 			}
 		} else {
 			// Create the item search template with the specified parameters
